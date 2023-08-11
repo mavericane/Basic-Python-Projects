@@ -1,9 +1,13 @@
-#Imported Modules
+#Author: Amin (Mavericane)
+#GitHub Link: https://github.com/mavericane/
+#Website Link: https://mavericane.ir
+#Description: This program is used to check the version number of installed applications on the Windows operating system that are available at supported_apps.csv
+#Importing required modules
 #os module for finding an executable location on a drive
 import os
 #psutil module for listing all available drives
 import psutil
-#win32api module for getting application version from file attribute
+#win32api module for getting application versions from file attribute
 import win32api
 #termcolor module for colorizing output
 import termcolor
@@ -35,7 +39,7 @@ def get_version_number(file_path):
     version = ".".join(version)
     return version
 
-#Main function to get and store all available drives and check selected applications
+#The main function to get and store all available drives and check selected applications
 def checker(selected_apps):
     drives = get_available_drives()
     for app in selected_apps:
@@ -65,13 +69,16 @@ with open(f"{file_location_string}"+"supported_apps.csv", "r") as supported_apps
     for row in apps_list:
         apps.append(tuple(row))
 
+#Welcome output
 print("""Welcome to the Version Checker Drive program
 This program analyzes all drives to find the version number of supported applications
 You can check the supported applications list in the supported_apps.csv file that comes with the program
 To select apps if you want to check their version hit enter or type "yes"(y) to check and type "no"(n) to don't check""")
-    
+
+#List to store user-selected apps by prompt
 selected_apps = []
 
+#Loop to show and select apps by user needs
 for app in apps:
     while True:
         result = input(f"Do you want to check for \"{termcolor.colored(app[0], 'yellow')}\":")
@@ -83,6 +90,8 @@ for app in apps:
         else:
             print("Your entered option is not available please reconsider")
 
+#Output for starting the checking function
 print(termcolor.colored("Your selected softwares will be checked in few moments", "yellow"))
 
+#Checking function call
 checker(selected_apps)
