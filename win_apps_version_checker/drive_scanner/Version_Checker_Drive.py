@@ -1,7 +1,7 @@
 #Author: Amin (Mavericane)
 #GitHub Link: https://github.com/mavericane/
 #Website Link: https://mavericane.ir
-#Description: This program is used to check the version number of installed applications on the Windows operating system that are available at supported_apps.csv
+#Description: This program is used to check the version number of installed applications on the Windows operating system that are available at supported_apps.csv by scanning all available drives
 #Importing required modules
 #os module for finding an executable location on a drive
 import os
