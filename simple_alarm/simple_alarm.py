@@ -7,12 +7,16 @@
 # Importing required modules
 # platform module for detecting os
 import platform
+
 # time module for setting an alarm
 import time
+
 # termcolor module for colorizing outputs
 import termcolor
+
 # playsound function from playsound module to simply playing an alarm sound
 from playsound import playsound
+
 
 # Detecting os and running file location
 def os_detect():
@@ -38,11 +42,13 @@ def os_detect():
     else:
         print("This program doesn't support your operating system")
         exit()
-    
+
+
 # Playing alarm sound file
 def play_alarm_sound(sound_file):
     file_location = os_detect()
     playsound(file_location + sound_file)
+
 
 # Setting alarm for user requested time
 def set_alarm(alarm_time):
@@ -55,22 +61,38 @@ def set_alarm(alarm_time):
             break
         time.sleep(1)
 
+
 # Main function to run the program
 def main():
     print("Simple Alarm Clock")
 
     while True:
-        print(termcolor.colored("Note: Please enter full Hour:Minute:Second format like 03:05:01", "yellow", "on_black"))
+        print(
+            termcolor.colored(
+                "Note: Please enter full Hour:Minute:Second format like 03:05:01",
+                "yellow",
+                "on_black",
+            )
+        )
         alarm_time = input("Set the alarm time (HH:MM:SS format): ")
 
         try:
             time.strptime(alarm_time, "%H:%M:%S")
             break
         except ValueError:
-            print(termcolor.colored("Invalid time format. Please use HH:MM:SS format.", "red"))
+            print(
+                termcolor.colored(
+                    "Invalid time format. Please use HH:MM:SS format.", "red"
+                )
+            )
 
-    print(termcolor.colored(f"Alarm set for {alarm_time}", "green", "on_black", attrs=["blink"]))
+    print(
+        termcolor.colored(
+            f"Alarm set for {alarm_time}", "green", "on_black", attrs=["blink"]
+        )
+    )
     set_alarm(alarm_time)
+
 
 if __name__ == "__main__":
     main()
