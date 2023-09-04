@@ -1,7 +1,7 @@
 # Author: Amin (Mavericane)
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
-# Description:
+# Description: Hangman game(guessing words with guessing letters) for single user playing with computer
 # Importing required modules
 # random module for selecting random choice
 import random
