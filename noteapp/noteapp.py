@@ -2,7 +2,7 @@
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
 # Description: This file is a simple note taking app. View, Creates, Edits, Delete text notes with txt file format(*.txt).
-# Version 1: Only creates note
+# Version 2: view a specific note, create a new note
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -39,9 +39,10 @@ def os_detect():
 
 # Function to display the menu
 def display_menu():
-    print("Note-taking App Menu:")
+    print(termcolor.colored("Note-taking App Menu:", "cyan"))
     print("1. Create a new note")
-    print("2. Quit")
+    print("2. View a specific note")
+    print("3. Quit")
 
 
 # Function to create a new note
@@ -69,6 +70,21 @@ def create_note():
     print(f"Note '{title}.txt' created successfully!")
 
 
+# Function to view a specific note
+def view_specific_note():
+    file_location = os_detect()
+    filename = input("Enter note title to view: ")
+    try:
+        with open(f"{file_location}" + f"{filename}.txt", "r") as file:
+            content = file.read()
+            print(f"Content of '{filename}.txt':")
+            print(termcolor.colored("`" * 3, "green"))
+            print(content)
+            print(termcolor.colored("`" * 3, "green"))
+    except FileNotFoundError:
+        print(f"File '{filename}' not found.")
+
+
 if __name__ == "__main__":
     print(
         termcolor.colored(
@@ -83,6 +99,8 @@ if __name__ == "__main__":
         if choice == "1":
             create_note()
         elif choice == "2":
+            view_specific_note()
+        elif choice == "3":
             print("Goodbye!")
             break
         else:
