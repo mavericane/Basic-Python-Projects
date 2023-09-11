@@ -2,7 +2,7 @@
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
 # Description: This file is a simple note taking app. View, Creates, Edits, Delete text notes with txt file format(*.txt).
-# Version 3: create a new note, edit a note, view a specific note.
+# Version 4: create a new note, edit a note, view a specific note, view all saved notes.
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -12,6 +12,16 @@ import os
 
 # termcolor module for colorizing outputs
 import termcolor
+
+
+# Function to display the menu
+def display_menu():
+    print(termcolor.colored("Note-taking App Menu:", "cyan"))
+    print("1. Create a new note")
+    print("2. Edit a note")
+    print("3. View a specific note")
+    print("4. View all saved notes")
+    print("5. Quit")
 
 
 # Detecting os and running file location
@@ -42,18 +52,8 @@ def os_detect():
         exit()
 
 
-# Function to display the menu
-def display_menu():
-    print(termcolor.colored("Note-taking App Menu:", "cyan"))
-    print("1. Create a new note")
-    print("2. Edit a note")
-    print("3. View a specific note")
-    print("4. Quit")
-
-
 # Function to create a new note
 def create_note():
-    file_location = os_detect()
     if not os.path.exists(file_location):
         os.makedirs(file_location)
     title = input("Enter note title: ")
@@ -67,7 +67,7 @@ def create_note():
         if user_input.casefold() == "y" or user_input.casefold() == "yes":
             edit_note()
         elif user_input.casefold() == "n" or user_input.casefold() == "no":
-            display_menu()
+            return None
         else:
             print(
                 termcolor.colored(
@@ -102,7 +102,6 @@ def create_note():
 
 # Function to edit a note
 def edit_note():
-    file_location = os_detect()
     filename = input("Enter note title to view: ")
     try:
         with open(f"{file_location}" + f"{filename}.txt", "r") as file:
@@ -130,7 +129,7 @@ def edit_note():
                 contents.append(content)
             except EOFError:
                 break
-        file_location = os_detect()
+
         with open(f"{file_location}" + f"{filename}.txt", "w") as text_file:
             text_file.write("\n".join(contents))
             text_file.close()
@@ -146,7 +145,6 @@ def edit_note():
 
 # Function to view a specific note
 def view_specific_note():
-    file_location = os_detect()
     filename = input("Enter note title to view: ")
     try:
         with open(f"{file_location}" + f"{filename}.txt", "r") as file:
@@ -161,7 +159,30 @@ def view_specific_note():
         print(termcolor.colored(f"File '{filename}' not found.", "yellow"))
 
 
+# Function to view all saved notes
+def view_all_notes():
+    try:
+        files = os.listdir(file_location)
+        files.sort()
+        print(
+            termcolor.colored(
+                "List of all saved notes one per line: ", "green", "on_black"
+            )
+        )
+        print(termcolor.colored("`" * 3, "cyan", "on_black"))
+        print("\n".join(files))
+        print(termcolor.colored("`" * 3, "cyan", "on_black"))
+    except FileNotFoundError:
+        print(
+            termcolor.colored(
+                f"'notes' directory not found! Perhaps you don't have a saved note.",
+                "yellow",
+            )
+        )
+
+
 if __name__ == "__main__":
+    file_location = os_detect()
     print(
         termcolor.colored(
             "Your notes are saved with the title for the text file name and with the note content for the contents of the text file",
@@ -179,6 +200,8 @@ if __name__ == "__main__":
         elif choice == "3":
             view_specific_note()
         elif choice == "4":
+            view_all_notes()
+        elif choice == "5":
             print("Goodbye!")
             break
         else:
