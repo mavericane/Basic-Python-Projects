@@ -13,6 +13,9 @@ import os
 # termcolor module for colorizing outputs
 import termcolor
 
+# re(regex) module for listing only *.txt files
+import re
+
 
 # Function to display the menu
 def display_menu():
@@ -163,14 +166,16 @@ def view_specific_note():
 def view_all_notes():
     try:
         files = os.listdir(file_location)
-        files.sort()
+        txt_pattern = re.compile(r"\.txt$")
+        txt_files = [file for file in files if txt_pattern.search(file)]
+        txt_files.sort()
         print(
             termcolor.colored(
                 "List of all saved notes one per line: ", "green", "on_black"
             )
         )
         print(termcolor.colored("`" * 3, "cyan", "on_black"))
-        print("\n".join(files))
+        print("\n".join(txt_files))
         print(termcolor.colored("`" * 3, "cyan", "on_black"))
     except FileNotFoundError:
         print(
