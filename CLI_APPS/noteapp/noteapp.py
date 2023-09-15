@@ -1,8 +1,8 @@
 # Author: Amin (Mavericane)
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
-# Description: This file is a simple note taking app. View, Creates, Edits, Delete text notes with txt file format(*.txt).
-# Version 4: create a new note, edit a note, view a specific note, view all saved notes.
+# Description: This file is a simple note-taking app. View, Create, Edit, and Delete text notes in txt file format(*.txt).
+# Version 5: Create a new note, edit a note, view a specific note, view all saved notes, delete a specific note, and delete all saved notes.
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -24,7 +24,9 @@ def display_menu():
     print("2. Edit a note")
     print("3. View a specific note")
     print("4. View all saved notes")
-    print("5. Quit")
+    print("5. Delete a specific note")
+    print("6. Delete all saved notes")
+    print("7. Quit")
 
 
 # Detecting os and running file location
@@ -143,7 +145,7 @@ def edit_note():
             )
         )
     except FileNotFoundError:
-        print(termcolor.colored(f"File '{filename}' not found.", "yellow"))
+        print(termcolor.colored(f"File '{filename}.txt' not found.", "yellow"))
 
 
 # Function to view a specific note
@@ -159,7 +161,7 @@ def view_specific_note():
             print(content)
             print(termcolor.colored("`" * 3, "cyan", "on_black"))
     except FileNotFoundError:
-        print(termcolor.colored(f"File '{filename}' not found.", "yellow"))
+        print(termcolor.colored(f"File '{filename}.txt' not found.", "yellow"))
 
 
 # Function to view all saved notes
@@ -186,6 +188,56 @@ def view_all_notes():
         )
 
 
+# Function to delete a specific note
+def delete_specific_note():
+    filename = input("Enter note title to delete: ")
+    try:
+        os.remove(file_location + filename + ".txt")
+        print(
+            termcolor.colored(f"{filename}.txt has been deleted.", "green", "on_black")
+        )
+    except FileNotFoundError:
+        print(termcolor.colored(f"File '{filename}.txt' not found.", "yellow"))
+
+
+# Function to delete all saved notes
+def delete_all_notes():
+    user_input = input("Do you want to delete all your saved notes? (Y yes, N no): ")
+    if user_input.casefold() == "y" or user_input.casefold() == "yes":
+        try:
+            files = os.listdir(file_location)
+            txt_pattern = re.compile(r"\.txt$")
+            txt_files = [file for file in files if txt_pattern.search(file)]
+            if len(txt_files) != 0:
+                txt_files.sort()
+                for txt_file in txt_files:
+                    os.remove(file_location + txt_file)
+                print(
+                    termcolor.colored(
+                        f"{len(txt_files)} saved notes have been deleted",
+                        "green",
+                        "on_black",
+                    )
+                )
+            else:
+                print(termcolor.colored("You have no saved notes", "yellow"))
+        except FileNotFoundError:
+            print(
+                termcolor.colored(
+                    f"'notes' directory not found! Perhaps you don't have a saved note.",
+                    "yellow",
+                )
+            )
+    elif user_input.casefold() == "n" or user_input.casefold() == "no":
+        return None
+    else:
+        print(
+            termcolor.colored(
+                "Invalid choice. Please enter a valid option.", "red", "on_black"
+            )
+        )
+
+
 if __name__ == "__main__":
     file_location = os_detect()
     print(
@@ -207,6 +259,10 @@ if __name__ == "__main__":
         elif choice == "4":
             view_all_notes()
         elif choice == "5":
+            delete_specific_note()
+        elif choice == "6":
+            delete_all_notes()
+        elif choice == "7":
             print("Goodbye!")
             break
         else:
