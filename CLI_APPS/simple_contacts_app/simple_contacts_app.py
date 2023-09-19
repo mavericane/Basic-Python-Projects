@@ -1,8 +1,8 @@
 # Author: Amin (Mavericane)
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
-# Description: This is a simple contact app for creating, editing, deleting, and finding contacts.
-# Version 1: Creating contact
+# Description: This is a simple contact app for creating, editing , deleting, finding contacts.
+# Version 2: Creating , viewing contact
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -16,7 +16,7 @@ import csv
 # termcolor module for colorizing outputs
 import termcolor
 
-# re(regex) module for checking if the numbers format and email format are correct or not
+# re(regex) module for checking if numbers format and emails format are correct or not
 import re
 
 
@@ -46,7 +46,7 @@ def os_detect():
         exit()
 
 
-# Checking if the contacts.csv file exists or doesn't exist to create a new contacts.csv file
+# Checking if contacts.csv file exists or doesn't exist to create a new contacts.csv file
 def contacts_csv_exists():
     if os.path.exists(file_location + "contacts.csv"):
         return True
@@ -54,7 +54,7 @@ def contacts_csv_exists():
         return False
 
 
-# Creating a new contacts.csv file for saving contacts
+# Creating new contacts.csv file for saving contacts
 def contacts_csv_create():
     data = ["first_name", "last_name", "phone", "phone2", "email"]
     with open(file_location + "contacts.csv", "w", newline="") as csv_file:
@@ -67,15 +67,67 @@ def contacts_csv_create():
 def display_menu():
     print(termcolor.colored("Contacts App Menu:", "cyan"))
     print("1. Create a new contact")
-    print("2. Quit")
+    print("2. Edit a contact")
+    print("3. View a specific contact")
+    print("4. View all saved contacts")
+    print("5. Delete a specific contact")
+    print("6. Delete all saved contacts")
+    print("7. Export contacts(VCARD) *.vcf file extension")
+    print("8. Quit")
 
 
 # Function to create a new contact
 def create_contact():
-    first_name = input("Please enter the contact's first name(for example: Amin): ")
-    last_name = input(
-        "Please enter the contact's last name(for example: Khatoon Abadi): "
-    )
+    while True:
+        first_name = input("Please enter the contact's first name(for example: Amin): ")
+        if first_name == "":
+            print(
+                termcolor.colored(
+                    "Contact's first name cannot be empty!", "yellow", "on_black"
+                )
+            )
+            continue
+        break
+    while True:
+        last_name = input(
+            "Please enter the contact's last name(for example: Khatoon Abadi): "
+        )
+        if last_name == "":
+            print(
+                termcolor.colored(
+                    "Contact's last name cannot be empty!", "yellow", "on_black"
+                )
+            )
+            continue
+        break
+    data = []
+    with open(file_location + "contacts.csv", "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        for row in csv_reader:
+            if (
+                row[0].casefold() == first_name.casefold()
+                and row[1].casefold() == last_name.casefold()
+            ):
+                data = row
+                break
+        csv_file.close()
+    if len(data) != 0:
+        print(
+            termcolor.colored(
+                f"Contact: {data[0]} {data[1]} is already saved!", "red", "on_black"
+            )
+        )
+        user_input = input("Do you want to edit this contact? (Y yes, N no): ")
+        if user_input.casefold() == "y" or user_input.casefold() == "yes":
+            edit_contact(data)
+        elif user_input.casefold() == "n" or user_input.casefold() == "no":
+            return None
+        else:
+            print(
+                termcolor.colored(
+                    "Invalid choice. Please enter a valid option.", "red", "on_black"
+                )
+            )
     while True:
         phone = input(
             "Please enter the contact's first phone number(for example: 09123456789): "
@@ -148,7 +200,7 @@ def create_contact():
     while True:
         print(
             termcolor.colored(
-                "If you don't want to enter email address just skip by pressing Enter",
+                "If you dont want to enter email address just skip by pressing Enter",
                 "yellow",
                 "on_black",
             )
@@ -187,6 +239,89 @@ def create_contact():
     )
 
 
+# Function to edit a contact
+def edit_contact(data=""):
+    if data == "":
+        data = view_specific_contact()
+
+
+# Function to view a specific contact(full contact information)(search by id or maybe first_name, lastname not decided)
+def view_specific_contact():
+    while True:
+        first_name = input("Please enter the contact's first name(for example: Amin): ")
+        if first_name == "":
+            print(
+                termcolor.colored(
+                    "Contact's first name cannot be empty!", "yellow", "on_black"
+                )
+            )
+            continue
+        break
+    while True:
+        last_name = input(
+            "Please enter the contact's last name(for example: Khatoon Abadi): "
+        )
+        if last_name == "":
+            print(
+                termcolor.colored(
+                    "Contact's last name cannot be empty!", "yellow", "on_black"
+                )
+            )
+            continue
+        break
+    data = []
+    with open(file_location + "contacts.csv", "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        for row in csv_reader:
+            if (
+                row[0].casefold() == first_name.casefold()
+                and row[1].casefold() == last_name.casefold()
+            ):
+                data = row
+                break
+        csv_file.close()
+    if len(data) == 0:
+        print("There is no contact with such first and last name!", "red", "on_black")
+        return None
+    print(termcolor.colored("Contact Information: ", "green", "on_black"))
+    print(termcolor.colored("`" * 3, "cyan", "on_black"))
+    print(f"First name: {data[0]}")
+    print(f"Last name: {data[1]}")
+    data[2] = data[2].strip("'")
+    print(f"First phone number: {data[2]}")
+    if data[3] != "":
+        data[3] = data[3].strip("'")
+        print(f"Second phone number: {data[3]}")
+    if data[4] != "":
+        print(f"Email address: {data[4]}")
+    print(termcolor.colored("`" * 3, "cyan", "on_black"))
+    return data
+
+
+# Function to view all saved contacts(id, first_name, last_name)
+def view_all_contacts():
+    # TODO
+    pass
+
+
+# Function to delete a specific contact(with id or first_name, last_name)
+def delete_specific_contact():
+    # TODO
+    pass
+
+
+# Function to delete all saved contacts
+def delete_all_contacts():
+    # TODO
+    pass
+
+
+# Function to export contacts to be saved in other applications with compatibility
+def export_contacts():
+    # TODO
+    pass
+
+
 if __name__ == "__main__":
     file_location = os_detect()
 
@@ -200,6 +335,18 @@ if __name__ == "__main__":
         if choice == "1":
             create_contact()
         elif choice == "2":
+            edit_contact()
+        elif choice == "3":
+            view_specific_contact()
+        elif choice == "4":
+            view_all_contacts()
+        elif choice == "5":
+            delete_specific_contact()
+        elif choice == "6":
+            delete_all_contacts()
+        elif choice == "7":
+            export_contacts()
+        elif choice == "8":
             print("Goodbye!")
             break
         else:
