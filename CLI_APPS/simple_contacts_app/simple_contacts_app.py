@@ -1,8 +1,8 @@
 # Author: Amin (Mavericane)
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
-# Description: This is a simple contact app for creating, editing , deleting, finding contacts.
-# Version 2: Creating , viewing contact
+# Description: This is a simple contacts app for creating, editing , deleting, finding contacts.
+# Version 3: Creating, viewing, editing contact
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -77,7 +77,7 @@ def display_menu():
 
 
 # Function to create a new contact
-def create_contact():
+def create_contact(edit):
     while True:
         first_name = input("Please enter the contact's first name(for example: Amin): ")
         if first_name == "":
@@ -100,34 +100,39 @@ def create_contact():
             )
             continue
         break
-    data = []
-    with open(file_location + "contacts.csv", "r") as csv_file:
-        csv_reader = csv.reader(csv_file)
-        for row in csv_reader:
-            if (
-                row[0].casefold() == first_name.casefold()
-                and row[1].casefold() == last_name.casefold()
-            ):
-                data = row
-                break
-        csv_file.close()
-    if len(data) != 0:
-        print(
-            termcolor.colored(
-                f"Contact: {data[0]} {data[1]} is already saved!", "red", "on_black"
-            )
-        )
-        user_input = input("Do you want to edit this contact? (Y yes, N no): ")
-        if user_input.casefold() == "y" or user_input.casefold() == "yes":
-            edit_contact(data)
-        elif user_input.casefold() == "n" or user_input.casefold() == "no":
-            return None
-        else:
+    # Checking contact is already saved or not
+    if not edit:
+        data = []
+        with open(file_location + "contacts.csv", "r") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                if (
+                    row[0].casefold() == first_name.casefold()
+                    and row[1].casefold() == last_name.casefold()
+                ):
+                    data = row
+                    break
+            csv_file.close()
+        if len(data) != 0:
             print(
                 termcolor.colored(
-                    "Invalid choice. Please enter a valid option.", "red", "on_black"
+                    f"Contact: {data[0]} {data[1]} is already saved!", "red", "on_black"
                 )
             )
+            user_input = input("Do you want to edit this contact? (Y yes, N no): ")
+            if user_input.casefold() == "y" or user_input.casefold() == "yes":
+                edit_contact(data)
+                return None
+            elif user_input.casefold() == "n" or user_input.casefold() == "no":
+                return None
+            else:
+                print(
+                    termcolor.colored(
+                        "Invalid choice. Please enter a valid option.",
+                        "red",
+                        "on_black",
+                    )
+                )
     while True:
         phone = input(
             "Please enter the contact's first phone number(for example: 09123456789): "
@@ -135,7 +140,6 @@ def create_contact():
         pattern = r"^09\d{9}$"
         match = re.match(pattern, phone)
         if match:
-            phone = "'" + phone + "'"
             break
         else:
             print(
@@ -187,7 +191,6 @@ def create_contact():
             break
         match = re.match(pattern, phone2)
         if match:
-            phone2 = "'" + phone2 + "'"
             break
         else:
             print(
@@ -225,6 +228,9 @@ def create_contact():
 
     data = [first_name, last_name, phone, phone2, email]
 
+    if edit:
+        return data
+
     with open(file_location + "contacts.csv", "a", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(data)
@@ -240,57 +246,103 @@ def create_contact():
 
 
 # Function to edit a contact
-def edit_contact(data=""):
-    if data == "":
-        data = view_specific_contact()
+def edit_contact(data=[]):
+    data = view_specific_contact(data)
+
+    if data == None:
+        return None
+
+    with open(file_location + "contacts.csv", "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        csv_data = []
+        for row in csv_reader:
+            if (
+                row[0].casefold() != data[0].casefold()
+                and row[1].casefold() != data[1].casefold()
+            ):
+                csv_data.append(row)
+            else:
+                csv_data.append([])
+        csv_file.close()
+
+    new_data = create_contact(edit=True)
+
+    for i in range(len(csv_data)):
+        if csv_data[i] == []:
+            csv_data[i] = new_data
+
+    with open(file_location + "contacts.csv", "w", newline="") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        for item in csv_data:
+            csv_writer.writerow(item)
+        csv_file.close()
+
+    print(
+        termcolor.colored(
+            f"Contact: Old contact details: {data[0]} {data[1]} edited to new contact details: {new_data[0]} {new_data[1]} successfully",
+            "green",
+            "on_black",
+        )
+    )
+
+    view_specific_contact(new_data)
 
 
 # Function to view a specific contact(full contact information)(search by id or maybe first_name, lastname not decided)
-def view_specific_contact():
-    while True:
-        first_name = input("Please enter the contact's first name(for example: Amin): ")
-        if first_name == "":
-            print(
-                termcolor.colored(
-                    "Contact's first name cannot be empty!", "yellow", "on_black"
-                )
-            )
-            continue
-        break
-    while True:
-        last_name = input(
-            "Please enter the contact's last name(for example: Khatoon Abadi): "
-        )
-        if last_name == "":
-            print(
-                termcolor.colored(
-                    "Contact's last name cannot be empty!", "yellow", "on_black"
-                )
-            )
-            continue
-        break
-    data = []
-    with open(file_location + "contacts.csv", "r") as csv_file:
-        csv_reader = csv.reader(csv_file)
-        for row in csv_reader:
-            if (
-                row[0].casefold() == first_name.casefold()
-                and row[1].casefold() == last_name.casefold()
-            ):
-                data = row
-                break
-        csv_file.close()
+def view_specific_contact(data=[]):
     if len(data) == 0:
-        print("There is no contact with such first and last name!", "red", "on_black")
-        return None
+        while True:
+            first_name = input(
+                "Please enter the contact's first name(for example: Amin): "
+            )
+            if first_name == "":
+                print(
+                    termcolor.colored(
+                        "Contact's first name cannot be empty!", "yellow", "on_black"
+                    )
+                )
+                continue
+            break
+        while True:
+            last_name = input(
+                "Please enter the contact's last name(for example: Khatoon Abadi): "
+            )
+            if last_name == "":
+                print(
+                    termcolor.colored(
+                        "Contact's last name cannot be empty!", "yellow", "on_black"
+                    )
+                )
+                continue
+            break
+        data = []
+        with open(file_location + "contacts.csv", "r") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                if (
+                    row[0].casefold() == first_name.casefold()
+                    and row[1].casefold() == last_name.casefold()
+                ):
+                    data = row
+                    break
+            csv_file.close()
+        if len(data) == 0:
+            print(
+                termcolor.colored(
+                    "There is no contact with such first and last name!",
+                    "red",
+                    "on_black",
+                )
+            )
+            return None
+
+    # Contact information output
     print(termcolor.colored("Contact Information: ", "green", "on_black"))
     print(termcolor.colored("`" * 3, "cyan", "on_black"))
     print(f"First name: {data[0]}")
     print(f"Last name: {data[1]}")
-    data[2] = data[2].strip("'")
     print(f"First phone number: {data[2]}")
     if data[3] != "":
-        data[3] = data[3].strip("'")
         print(f"Second phone number: {data[3]}")
     if data[4] != "":
         print(f"Email address: {data[4]}")
