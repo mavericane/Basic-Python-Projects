@@ -2,7 +2,7 @@
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
 # Description: This is a simple contacts app for creating, editing , deleting, finding contacts.
-# Version 3: Creating, viewing, editing contact
+# Version 4: Creating, viewing, viewing all contacts, editing contact
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -78,9 +78,21 @@ def display_menu():
 
 # Function to create a new contact
 def create_contact(edit):
+    print(
+        termcolor.colored(
+            "Contact information is stored in a case sensitive manner",
+            "yellow",
+            "on_black",
+        )
+    )
     while True:
-        first_name = input("Please enter the contact's first name(for example: Amin): ")
-        if first_name == "":
+        if edit:
+            first_name = input("Please enter the new first name: ")
+        else:
+            first_name = input(
+                "Please enter the contact's first name(for example: Amin): "
+            )
+        if first_name == "" and not edit:
             print(
                 termcolor.colored(
                     "Contact's first name cannot be empty!", "yellow", "on_black"
@@ -89,10 +101,13 @@ def create_contact(edit):
             continue
         break
     while True:
-        last_name = input(
-            "Please enter the contact's last name(for example: Khatoon Abadi): "
-        )
-        if last_name == "":
+        if edit:
+            last_name = input("Please enter the new last name: ")
+        else:
+            last_name = input(
+                "Please enter the contact's last name(for example: Khatoon Abadi): "
+            )
+        if last_name == "" and not edit:
             print(
                 termcolor.colored(
                     "Contact's last name cannot be empty!", "yellow", "on_black"
@@ -134,9 +149,21 @@ def create_contact(edit):
                     )
                 )
     while True:
-        phone = input(
-            "Please enter the contact's first phone number(for example: 09123456789): "
-        )
+        if edit:
+            phone = input("Please enter the new phone number: ")
+        else:
+            phone = input(
+                "Please enter the contact's phone number(for example: 09123456789): "
+            )
+        if phone == "" and not edit:
+            print(
+                termcolor.colored(
+                    "Contact's phone cannot be empty!", "yellow", "on_black"
+                )
+            )
+            continue
+        if phone == "" and edit:
+            break
         pattern = r"^09\d{9}$"
         match = re.match(pattern, phone)
         if match:
@@ -157,14 +184,17 @@ def create_contact(edit):
                 "on_black",
             )
         )
-        phone2 = input(
-            "Please enter the contact's second phone number(for example: 09123456789): "
-        )
+        if edit:
+            phone2 = input("Please enter the mew second phone number: ")
+        else:
+            phone2 = input(
+                "Please enter the contact's second phone number(for example: 09123456789): "
+            )
         restart_flag = False
-        if phone2 == phone:
+        if phone2 == phone and not edit:
             print(
                 termcolor.colored(
-                    "You entered contact's first number again in second number",
+                    "You entered contact's number again in second number",
                     "yellow",
                     "on_black",
                 )
@@ -208,9 +238,12 @@ def create_contact(edit):
                 "on_black",
             )
         )
-        email = input(
-            "Please enter the contact's email address(for example: aminkhatoonabadi@gmail.com): "
-        )
+        if edit:
+            email = input("Please enter the new email address: ")
+        else:
+            email = input(
+                "Please enter the contact's email address(for example: aminkhatoonabadi@gmail.com): "
+            )
         if email == "":
             break
         pattern = f"([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([0-9A-Za-z]([0-9A-Za-z-]{0,61}[0-9A-Za-z])?(\.[0-9A-Za-z]([0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*|\[((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|IPv6:((((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){6}|::((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){5}|[0-9A-Fa-f]{0,4}::((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){4}|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):)?(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}))?::((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){3}|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){0,2}(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}))?::((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){2}|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){0,3}(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}))?::(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){0,4}(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}))?::)((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3})|(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3})|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){0,5}(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}))?::(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3})|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){0,6}(0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}))?::)|(?!IPv6:)[0-9A-Za-z-]*[0-9A-Za-z]:[!-Z^-~]+)])"
@@ -247,6 +280,13 @@ def create_contact(edit):
 
 # Function to edit a contact
 def edit_contact(data=[]):
+    print(
+        termcolor.colored(
+            "Contact information is stored in a case sensitive manner",
+            "yellow",
+            "on_black",
+        )
+    )
     data = view_specific_contact(data)
 
     if data == None:
@@ -265,7 +305,27 @@ def edit_contact(data=[]):
                 csv_data.append([])
         csv_file.close()
 
+    print(
+        termcolor.colored(
+            "You can press Enter to skip editing a specific data", "yellow", "on_black"
+        )
+    )
+
     new_data = create_contact(edit=True)
+
+    for i in range(2 + 1):
+        if new_data[i] == "":
+            new_data[i] = data[i]
+
+    if new_data == data:
+        print(
+            termcolor.colored(
+                "You have not edited any information. Editing has been cancelled",
+                "red",
+                "on_black",
+            )
+        )
+        return None
 
     for i in range(len(csv_data)):
         if csv_data[i] == []:
@@ -288,7 +348,7 @@ def edit_contact(data=[]):
     view_specific_contact(new_data)
 
 
-# Function to view a specific contact(full contact information)(search by id or maybe first_name, lastname not decided)
+# Function to view a specific contact
 def view_specific_contact(data=[]):
     if len(data) == 0:
         while True:
@@ -341,7 +401,7 @@ def view_specific_contact(data=[]):
     print(termcolor.colored("`" * 3, "cyan", "on_black"))
     print(f"First name: {data[0]}")
     print(f"Last name: {data[1]}")
-    print(f"First phone number: {data[2]}")
+    print(f"Phone number: {data[2]}")
     if data[3] != "":
         print(f"Second phone number: {data[3]}")
     if data[4] != "":
@@ -350,10 +410,49 @@ def view_specific_contact(data=[]):
     return data
 
 
-# Function to view all saved contacts(id, first_name, last_name)
+# Function to view all saved contacts
 def view_all_contacts():
-    # TODO
-    pass
+    # Loading all contacts.csv data to a list
+    data = []
+    with open(file_location + "contacts.csv", "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        for row in csv_reader:
+            data.append(row)
+
+    # Removing title's
+    data.pop(0)
+
+    # Output to show all saved contact's
+    if len(data) == 0:
+        print(
+            termcolor.colored("No contacts have been saved yet!", "yellow", "on_black")
+        )
+        return None
+    contacts_num = len(data)
+    print(
+        termcolor.colored(
+            f"There is {contacts_num} contacts have been saved with below details:",
+            "green",
+            "on_black",
+        )
+    )
+    print(termcolor.colored("`" * 3, "cyan", "on_black"))
+    for item in data:
+        output = "Contact: "
+        first_name = termcolor.colored("First name:", "green") + " " + item[0]
+        last_name = termcolor.colored("Last name:", "green") + " " + item[1]
+        phone = termcolor.colored("Phone number:", "blue") + " " + item[2]
+        output += f"{first_name}{termcolor.colored(',', 'green')} {last_name}{termcolor.colored(',', 'green')} {phone}"
+        if item[3] != "":
+            phone2 = (
+                termcolor.colored("Second phone number:", "light_blue") + " " + item[3]
+            )
+            output += f"{termcolor.colored(',', 'green')} {phone2}"
+        if item[4] != "":
+            email = termcolor.colored("Email:", "light_green") + " " + item[4]
+            output += f"{termcolor.colored(',', 'green')} {email}"
+        print(output)
+    print(termcolor.colored("`" * 3, "cyan", "on_black"))
 
 
 # Function to delete a specific contact(with id or first_name, last_name)
@@ -384,8 +483,9 @@ if __name__ == "__main__":
         display_menu()
         choice = input("Enter your choice: ")
 
+        os.system("cls" if os.name == "Windows" else "clear")
         if choice == "1":
-            create_contact()
+            create_contact(edit=False)
         elif choice == "2":
             edit_contact()
         elif choice == "3":
