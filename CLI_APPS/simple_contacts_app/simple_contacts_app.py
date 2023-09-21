@@ -1,8 +1,8 @@
 # Author: Amin (Mavericane)
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
-# Description: This is a simple contacts app for creating, editing , deleting, finding contacts.
-# Version 4: Creating, viewing, viewing all contacts, editing contact
+# Description: This is a simple contacts app for creating, editing, viewing, deleting, and exporting to other apps for contact management.
+# Version 5: Create a new contact, edit a contact, view a specific contact, view all saved contacts, delete a specific contact, and delete all saved contacts.
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -16,7 +16,7 @@ import csv
 # termcolor module for colorizing outputs
 import termcolor
 
-# re(regex) module for checking if numbers format and emails format are correct or not
+# re(regex) module for checking if the numbers format and email format are correct or not
 import re
 
 
@@ -46,7 +46,7 @@ def os_detect():
         exit()
 
 
-# Checking if contacts.csv file exists or doesn't exist to create a new contacts.csv file
+# Checking if the contacts.csv file exists or doesn't exist to create a new contacts.csv file
 def contacts_csv_exists():
     if os.path.exists(file_location + "contacts.csv"):
         return True
@@ -54,7 +54,7 @@ def contacts_csv_exists():
         return False
 
 
-# Creating new contacts.csv file for saving contacts
+# Creating a new contacts.csv file for saving contacts
 def contacts_csv_create():
     data = ["first_name", "last_name", "phone", "phone2", "email"]
     with open(file_location + "contacts.csv", "w", newline="") as csv_file:
@@ -80,7 +80,7 @@ def display_menu():
 def create_contact(edit):
     print(
         termcolor.colored(
-            "Contact information is stored in a case sensitive manner",
+            "Contact information is stored in a case-sensitive manner",
             "yellow",
             "on_black",
         )
@@ -115,7 +115,7 @@ def create_contact(edit):
             )
             continue
         break
-    # Checking contact is already saved or not
+    # Checking whether contact is already saved or not
     if not edit:
         data = []
         with open(file_location + "contacts.csv", "r") as csv_file:
@@ -171,7 +171,7 @@ def create_contact(edit):
         else:
             print(
                 termcolor.colored(
-                    "Your entered format for phone number is not correct",
+                    "Your entered format for the phone number is not correct",
                     "yellow",
                     "on_black",
                 )
@@ -179,13 +179,13 @@ def create_contact(edit):
     while True:
         print(
             termcolor.colored(
-                "If you dont want to enter second phone number just skip by pressing Enter",
+                "If you don't want to enter a second phone number just skip by pressing Enter",
                 "yellow",
                 "on_black",
             )
         )
         if edit:
-            phone2 = input("Please enter the mew second phone number: ")
+            phone2 = input("Please enter the new second phone number: ")
         else:
             phone2 = input(
                 "Please enter the contact's second phone number(for example: 09123456789): "
@@ -194,7 +194,7 @@ def create_contact(edit):
         if phone2 == phone and not edit:
             print(
                 termcolor.colored(
-                    "You entered contact's number again in second number",
+                    "You entered the contact's number again in the second number",
                     "yellow",
                     "on_black",
                 )
@@ -225,7 +225,7 @@ def create_contact(edit):
         else:
             print(
                 termcolor.colored(
-                    "Your entered format for phone number is not correct",
+                    "Your entered format for the phone number is not correct",
                     "yellow",
                     "on_black",
                 )
@@ -233,7 +233,7 @@ def create_contact(edit):
     while True:
         print(
             termcolor.colored(
-                "If you dont want to enter email address just skip by pressing Enter",
+                "If you do not want to enter email address just skip by pressing Enter",
                 "yellow",
                 "on_black",
             )
@@ -271,7 +271,7 @@ def create_contact(edit):
 
     print(
         termcolor.colored(
-            f"Contact: {first_name} {last_name} addded successfully",
+            f"Contact: {first_name} {last_name} added successfully",
             "green",
             "on_black",
         )
@@ -282,7 +282,7 @@ def create_contact(edit):
 def edit_contact(data=[]):
     print(
         termcolor.colored(
-            "Contact information is stored in a case sensitive manner",
+            "Contact information is stored in a case-sensitive manner",
             "yellow",
             "on_black",
         )
@@ -419,10 +419,10 @@ def view_all_contacts():
         for row in csv_reader:
             data.append(row)
 
-    # Removing title's
+    # Removing the title's
     data.pop(0)
 
-    # Output to show all saved contact's
+    # Output to show all saved contacts
     if len(data) == 0:
         print(
             termcolor.colored("No contacts have been saved yet!", "yellow", "on_black")
@@ -457,14 +457,76 @@ def view_all_contacts():
 
 # Function to delete a specific contact(with id or first_name, last_name)
 def delete_specific_contact():
-    # TODO
-    pass
+    data = view_specific_contact()
+
+    if data == None:
+        return None
+
+    with open(file_location + "contacts.csv", "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        csv_data = []
+        for row in csv_reader:
+            if (
+                row[0].casefold() != data[0].casefold()
+                and row[1].casefold() != data[1].casefold()
+            ):
+                csv_data.append(row)
+        csv_file.close()
+
+    with open(file_location + "contacts.csv", "w", newline="") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        for item in csv_data:
+            csv_writer.writerow(item)
+        csv_file.close()
+
+    print(
+        termcolor.colored(
+            f"Contact: {data[0]} {data[1]} was successfully deleted",
+            "green",
+            "on_black",
+        )
+    )
 
 
 # Function to delete all saved contacts
 def delete_all_contacts():
-    # TODO
-    pass
+    user_input = input("Do you want to delete all your saved contacts? (Y yes, N no): ")
+    if user_input.casefold() == "y" or user_input.casefold() == "yes":
+        # Loading all contacts.csv data to a list
+        data = []
+        with open(file_location + "contacts.csv", "r") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                data.append(row)
+
+        # Removing the title's
+        data.pop(0)
+
+        # Output to show all saved contacts
+        if len(data) == 0:
+            print(
+                termcolor.colored(
+                    "No contacts have been saved yet!", "yellow", "on_black"
+                )
+            )
+            return None
+
+        # Removing all contacts(recreating contacts.csv)
+        contacts_csv_create()
+        print(
+            termcolor.colored(
+                f"{len(data)} saved contacts have been deleted", "green", "on_black"
+            )
+        )
+
+    elif user_input.casefold() == "n" or user_input.casefold() == "no":
+        return None
+    else:
+        print(
+            termcolor.colored(
+                "Invalid choice. Please enter a valid option.", "red", "on_black"
+            )
+        )
 
 
 # Function to export contacts to be saved in other applications with compatibility
