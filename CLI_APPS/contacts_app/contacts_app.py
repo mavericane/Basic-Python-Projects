@@ -2,7 +2,7 @@
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
 # Description: This is a simple contacts app for creating, editing, viewing, deleting, and exporting to other apps for contact management.
-# Version 5: Create a new contact, edit a contact, view a specific contact, view all saved contacts, delete a specific contact, and delete all saved contacts.
+# Version 5.1 : Create a new contact, edit a contact, view a specific contact, view all saved contacts, delete a specific contact, and delete all saved contacts.
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -134,20 +134,22 @@ def create_contact(edit):
                     f"Contact: {data[0]} {data[1]} is already saved!", "red", "on_black"
                 )
             )
-            user_input = input("Do you want to edit this contact? (Y yes, N no): ")
-            if user_input.casefold() == "y" or user_input.casefold() == "yes":
-                edit_contact(data)
-                return None
-            elif user_input.casefold() == "n" or user_input.casefold() == "no":
-                return None
-            else:
-                print(
-                    termcolor.colored(
-                        "Invalid choice. Please enter a valid option.",
-                        "red",
-                        "on_black",
+            while True:
+                user_input = input("Do you want to edit this contact? (Y yes, N no): ")
+                if user_input.casefold() == "y" or user_input.casefold() == "yes":
+                    edit_contact(data)
+                elif user_input.casefold() == "n" or user_input.casefold() == "no":
+                    pass
+                else:
+                    print(
+                        termcolor.colored(
+                            "Invalid choice. Please enter a valid option.",
+                            "red",
+                            "on_black",
+                        )
                     )
-                )
+                    continue
+                return None
     while True:
         if edit:
             phone = input("Please enter the new phone number: ")
