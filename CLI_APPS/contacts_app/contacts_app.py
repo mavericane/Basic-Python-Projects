@@ -2,7 +2,7 @@
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
 # Description: This is a simple contacts app for creating, editing, viewing, deleting, and exporting to other apps for contact management.
-# Version 5.1 : Create a new contact, edit a contact, view a specific contact, view all saved contacts, delete a specific contact, and delete all saved contacts.
+# Version 5.2: Create a new contact, edit a contact, view a specific contact, view all saved contacts, delete a specific contact, and delete all saved contacts.
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -221,6 +221,7 @@ def create_contact(edit):
             continue
         if phone2 == "":
             break
+        pattern = r"^09\d{9}$"
         match = re.match(pattern, phone2)
         if match:
             break
