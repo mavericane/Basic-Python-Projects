@@ -1,8 +1,8 @@
 # Author: Amin (Mavericane)
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
-# Description: This is a simple to_do app. In this app you can simply create, edit, view, delete, mark a task az completed.
-# Version 3: Create, edit, view a task
+# Description: This is a simple to_do app. In this app you can simply create, edit, view, delete, mark a task as completed.
+# Version 4: Create, edit, view,mark task as completed
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -395,8 +395,40 @@ def view_specific_task(data=[]):
 
 # Function to mark a task as completed
 def mark_task_completed():
-    # TODO
-    pass
+    data = view_specific_task()
+
+    if data == None:
+        return None
+
+    if data[3] == "completed":
+        print(
+            termcolor.colored("Selected task is already completed!", "red", "on_black")
+        )
+        return None
+
+    # Changing task status to completed
+    data[3] = "completed"
+    # Loading all tasks to csv_data
+    with open(file_location + "tasks.csv", "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        csv_data = []
+        for row in csv_reader:
+            if (
+                row[0].casefold() != data[0].casefold()
+                and row[1].casefold() != data[1].casefold()
+            ):
+                csv_data.append(row)
+            else:
+                csv_data.append(data)
+        csv_file.close()
+    # Saving all tasks with marked task to tasks.csv
+    with open(file_location + "tasks.csv", "w", newline="") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        for item in csv_data:
+            csv_writer.writerow(item)
+        csv_file.close()
+    # Output to complete the process
+    print(termcolor.colored("Selected task marked as completed!", "green", "on_black"))
 
 
 # Function to delete a specific task
