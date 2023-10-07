@@ -1,8 +1,8 @@
 # Author: Amin (Mavericane)
 # Github Link: https://github.com/mavericane/
 # Website Link: https://mavericane.ir
-# Description: This is a simple to_do app. In this app you can simply create, edit, view, delete, mark a task as completed.
-# Version 4: Create, edit, view,mark task as completed
+# Description: This is a simple to_do application. In this app, you can simply create, edit, view, delete, and mark a task as completed.
+# Version 5: Create tasks, edit tasks, view tasks, mark tasks as completed, delete tasks or a specific task
 # Importing required modules
 # platform module for detecting os
 import platform
@@ -53,10 +53,10 @@ def tasks_csv_exists():
 
 # Creating a new tasks.csv file for tasks management
 def tasks_csv_create():
-    data = ["id", "name", "status"]
+    titles = ["id", "name", "description", "status"]
     with open(file_location + "tasks.csv", "w", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(data)
+        csv_writer.writerow(titles)
         csv_file.close()
 
 
@@ -128,22 +128,26 @@ def display_tasks():
 
 # Function to add a new task
 def add_task(edit=False, data=[]):
-    # Get the last ID number stored in tasks.csv and old saved tasks
+    # Get old saved tasks from tasks.csv
     with open(file_location + "tasks.csv", "r") as csv_file:
         csv_reader = csv.reader(csv_file)
-        # Starting from "0" because first line is not a actual data and doesn't have number
-        id = 0
         old_tasks = []
         for row in csv_reader:
             old_tasks.append(row)
-            id += 1
 
+    # Removing the titles from the data
+    old_tasks.pop(0)
+
+    # Get the last ID number stored in tasks.csv and generate a new ID for the new task
+    if len(old_tasks) != 0:
+        id = int(old_tasks[-1][0]) + 1
+    else:
+        id = 1
+
+    # Gathering old task names into a list to search if new task names already exist in tasks or not
     old_task_names = []
     for item in old_tasks:
-        old_task_names.append(item[0])
-
-    # Removing the name title
-    old_task_names.pop(0)
+        old_task_names.append(item[1])
 
     while True:
         task_name = input("Please enter the task name: ")
@@ -166,6 +170,11 @@ def add_task(edit=False, data=[]):
                         data = item
                 edit_task(data)
             elif user_input.casefold() == "n" or user_input.casefold() == "no":
+                print(
+                    termcolor.colored(
+                        "Adding task has been aborted!", "red", "on_black"
+                    )
+                )
                 pass
             else:
                 print(
@@ -188,10 +197,10 @@ def add_task(edit=False, data=[]):
     if task_description.isspace():
         task_description = ""
 
-    # Data proccessing
+    # Data processing
     task = [id, task_name, task_description, "uncompleted"]
 
-    # Data processing and returning data to be edited at its own function
+    # Data processing and returning data to be edited at its function
     if edit:
         task = [data[0], task_name, task_description, data[3]]
         return task
@@ -211,7 +220,7 @@ def add_task(edit=False, data=[]):
     )
 
 
-# Function to edit a uncompleted task
+# Function to edit an uncompleted task
 def edit_task(data=[]):
     data = view_specific_task(data)
 
@@ -290,7 +299,7 @@ def view_specific_task(data=[]):
             while True:
                 print(
                     termcolor.colored(
-                        "You can skip entering task name if you forget it!",
+                        "You can skip entering the task name if you forget it!",
                         "yellow",
                         "on_black",
                     )
@@ -321,6 +330,11 @@ def view_specific_task(data=[]):
                     if user_input.casefold() == "y" or user_input.casefold() == "yes":
                         edit_task(data)
                     elif user_input.casefold() == "n" or user_input.casefold() == "no":
+                        print(
+                            termcolor.colored(
+                                "Editing task has been aborted!", "red", "on_black"
+                            )
+                        )
                         pass
                     else:
                         print(
@@ -364,7 +378,7 @@ def view_specific_task(data=[]):
     if len(data) == 0:
         print(
             termcolor.colored(
-                "There is no saved task with such name or ID!",
+                "There is no saved task with such a name or ID!",
                 "red",
                 "on_black",
             )
@@ -372,7 +386,7 @@ def view_specific_task(data=[]):
         return None
 
     # Task details output
-    print(termcolor.colored("Task Detials: ", "green", "on_black"))
+    print(termcolor.colored("Task Details: ", "green", "on_black"))
     print(termcolor.colored("`" * 3, "cyan", "on_black"))
     if data[3] == "completed":
         output_color = "green"
@@ -421,26 +435,84 @@ def mark_task_completed():
             else:
                 csv_data.append(data)
         csv_file.close()
+
     # Saving all tasks with marked task to tasks.csv
     with open(file_location + "tasks.csv", "w", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
         for item in csv_data:
             csv_writer.writerow(item)
         csv_file.close()
+
     # Output to complete the process
     print(termcolor.colored("Selected task marked as completed!", "green", "on_black"))
 
 
 # Function to delete a specific task
 def delete_specific_task():
-    # TODO
-    pass
+    data = view_specific_task()
+
+    if data == None:
+        return None
+
+    # Loading all tasks to csv_data
+    with open(file_location + "tasks.csv", "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        csv_data = []
+        for row in csv_reader:
+            if (
+                row[0].casefold() != data[0].casefold()
+                and row[1].casefold() != data[1].casefold()
+            ):
+                csv_data.append(row)
+        csv_file.close()
+
+    # Saving all tasks with marked task to tasks.csv
+    with open(file_location + "tasks.csv", "w", newline="") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        for item in csv_data:
+            csv_writer.writerow(item)
+        csv_file.close()
+
+    # Output to complete the process
+    print(
+        termcolor.colored(
+            "Selected task has been deleted successfully!", "green", "on_black"
+        )
+    )
 
 
 # Function to delete all tasks(reset data)
 def delete_all_tasks():
-    # TODO
-    pass
+    while True:
+        print(
+            termcolor.colored(
+                "Data cannot be recovered after deletion", "yellow", "on_black"
+            )
+        )
+        user_input = input(
+            "Do you want to delete all your saved tasks and reset data? (Y yes, N no): "
+        )
+        if user_input.casefold() == "y" or user_input.casefold() == "yes":
+            tasks_csv_create()
+            print(
+                termcolor.colored(
+                    "All saved tasks have been deleted successfully!",
+                    "green",
+                    "on_black",
+                )
+            )
+        elif user_input.casefold() == "n" or user_input.casefold() == "no":
+            pass
+        else:
+            print(
+                termcolor.colored(
+                    "Invalid choice. Please enter a valid option.",
+                    "red",
+                    "on_black",
+                )
+            )
+            continue
+        return None
 
 
 if __name__ == "__main__":
@@ -457,7 +529,7 @@ if __name__ == "__main__":
         if choice == "1":
             display_tasks()
         elif choice == "2":
-            add_task(edit=False)
+            add_task()
         elif choice == "3":
             edit_task()
         elif choice == "4":
