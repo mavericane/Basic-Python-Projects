@@ -19,36 +19,23 @@ import termcolor
 # re(regex) module for checking if the numbers format and email format are correct or not
 import re
 
+# Path function from pathlib module for detecting running file location if script is running as a .py file
+from pathlib import Path
 
-# Detecting os and running file location
-def os_detect():
-    os_name = platform.system()
-    if os_name == "Linux":
-        file_location_system = __file__.split("/")
-        file_location = "/"
-        for i in range(len(file_location_system)):
-            if i == 0 or file_location_system[i] == file_location_system[-1]:
-                None
-            else:
-                file_location += file_location_system[i] + "/"
-        return file_location
-    elif os_name == "Windows":
-        file_location_system = __file__.split("\\")
-        file_location = ""
-        for i in range(len(file_location_system)):
-            if file_location_system[i] == file_location_system[-1]:
-                None
-            else:
-                file_location += file_location_system[i] + "\\"
-        return file_location
-    else:
-        print("This program doesn't support your operating system")
-        exit()
+# sys module for detecting running file location if script is compiled
+import sys
+
+
+# Detect file location (supports both .py and compiled executable)
+if getattr(sys, "frozen", False):
+    file_location = Path(sys.executable).parent
+else:
+    file_location = Path(__file__).resolve().parent
 
 
 # Checking if the contacts.csv file exists or doesn't exist to create a new contacts.csv file
 def contacts_csv_exists():
-    if os.path.exists(file_location + "contacts.csv"):
+    if os.path.exists(csv_file_path):
         return True
     else:
         return False
@@ -57,10 +44,9 @@ def contacts_csv_exists():
 # Creating a new contacts.csv file for saving contacts
 def contacts_csv_create():
     data = ["first_name", "last_name", "phone", "phone2", "email"]
-    with open(file_location + "contacts.csv", "w", newline="") as csv_file:
+    with open(csv_file_path, "w", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(data)
-        csv_file.close()
 
 
 # Displaying main menu
@@ -118,7 +104,7 @@ def create_contact(edit):
     # Checking whether contact is already saved or not
     if not edit:
         data = []
-        with open(file_location + "contacts.csv", "r") as csv_file:
+        with open(csv_file_path, "r") as csv_file:
             csv_reader = csv.reader(csv_file)
             for row in csv_reader:
                 if (
@@ -127,7 +113,6 @@ def create_contact(edit):
                 ):
                     data = row
                     break
-            csv_file.close()
         if len(data) != 0:
             print(
                 termcolor.colored(
@@ -267,10 +252,9 @@ def create_contact(edit):
     if edit:
         return data
 
-    with open(file_location + "contacts.csv", "a", newline="") as csv_file:
+    with open(csv_file_path, "a", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(data)
-        csv_file.close()
 
     print(
         termcolor.colored(
@@ -295,7 +279,7 @@ def edit_contact(data=[]):
     if data == None:
         return None
 
-    with open(file_location + "contacts.csv", "r") as csv_file:
+    with open(csv_file_path, "r") as csv_file:
         csv_reader = csv.reader(csv_file)
         csv_data = []
         for row in csv_reader:
@@ -306,7 +290,6 @@ def edit_contact(data=[]):
                 csv_data.append(row)
             else:
                 csv_data.append([])
-        csv_file.close()
 
     print(
         termcolor.colored(
@@ -334,11 +317,10 @@ def edit_contact(data=[]):
         if csv_data[i] == []:
             csv_data[i] = new_data
 
-    with open(file_location + "contacts.csv", "w", newline="") as csv_file:
+    with open(csv_file_path, "w", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
         for item in csv_data:
             csv_writer.writerow(item)
-        csv_file.close()
 
     print(
         termcolor.colored(
@@ -379,7 +361,7 @@ def view_specific_contact(data=[]):
                 continue
             break
         data = []
-        with open(file_location + "contacts.csv", "r") as csv_file:
+        with open(csv_file_path, "r") as csv_file:
             csv_reader = csv.reader(csv_file)
             for row in csv_reader:
                 if (
@@ -388,7 +370,6 @@ def view_specific_contact(data=[]):
                 ):
                     data = row
                     break
-            csv_file.close()
         if len(data) == 0:
             print(
                 termcolor.colored(
@@ -417,7 +398,7 @@ def view_specific_contact(data=[]):
 def view_all_contacts():
     # Loading all contacts.csv data to a list
     data = []
-    with open(file_location + "contacts.csv", "r") as csv_file:
+    with open(csv_file_path, "r") as csv_file:
         csv_reader = csv.reader(csv_file)
         for row in csv_reader:
             data.append(row)
@@ -465,7 +446,7 @@ def delete_specific_contact():
     if data == None:
         return None
 
-    with open(file_location + "contacts.csv", "r") as csv_file:
+    with open(csv_file_path, "r") as csv_file:
         csv_reader = csv.reader(csv_file)
         csv_data = []
         for row in csv_reader:
@@ -474,13 +455,11 @@ def delete_specific_contact():
                 and row[1].casefold() != data[1].casefold()
             ):
                 csv_data.append(row)
-        csv_file.close()
 
-    with open(file_location + "contacts.csv", "w", newline="") as csv_file:
+    with open(csv_file_path, "w", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
         for item in csv_data:
             csv_writer.writerow(item)
-        csv_file.close()
 
     print(
         termcolor.colored(
@@ -497,7 +476,7 @@ def delete_all_contacts():
     if user_input.casefold() == "y" or user_input.casefold() == "yes":
         # Loading all contacts.csv data to a list
         data = []
-        with open(file_location + "contacts.csv", "r") as csv_file:
+        with open(csv_file_path, "r") as csv_file:
             csv_reader = csv.reader(csv_file)
             for row in csv_reader:
                 data.append(row)
@@ -539,7 +518,7 @@ def export_contacts():
 
 
 if __name__ == "__main__":
-    file_location = os_detect()
+    csv_file_path = str(file_location) + "contacts.csv"
 
     if not contacts_csv_exists():
         contacts_csv_create()
