@@ -1,211 +1,118 @@
 # Author: Amin (Mavericane)
-# GitHub Link: https://github.com/mavericane/
-# Website Link: https://mavericane.ir
-# Description: This program accurately calculates the age of people including leap years (selectable).
-# Importing required modules
-# datetime module for retrieving today's date
+# GitHub: https://github.com/mavericane/
+# Website: https://mavericane.ir
+# Description: Calculates precise age, with optional leap year day inclusion.
+
 import datetime
+from termcolor import colored
+from dateutil.relativedelta import relativedelta
 
-# termcolor module for colorizing outputs
-import termcolor
+MONTHS = [
+    "1. January",
+    "2. February",
+    "3. March",
+    "4. April",
+    "5. May",
+    "6. June",
+    "7. July",
+    "8. August",
+    "9. September",
+    "10. October",
+    "11. November",
+    "12. December",
+]
 
-# Retrieving today's date
 today = datetime.date.today()
 
-# Year selection
-while True:
-    try:
-        birthyear = int(input("Please enter the year you were born: "))
-        if today.year >= birthyear >= 0:
-            break
-        else:
-            print(
-                termcolor.colored(
-                    "Your date of birth cannot be in the future.", "yellow"
-                )
-            )
-    except:
-        print("Please enter a valid year")
-print(
-    [
-        "1.January",
-        "2.February",
-        "3.March",
-        "4.April",
-        "5.May",
-        "6.June",
-        "7.July",
-        "8.August",
-        "9.September",
-        "10.October",
-        "11.November",
-        "12.December",
-    ]
-)
 
-# Month selection
-while True:
-    try:
-        birthmonth = int(
-            input("Please enter the month you were born(Number of month): ")
-        )
-        if birthyear == today.year:
-            if today.month >= birthmonth >= 1:
-                break
+def input_int(prompt, min_val, max_val, future_check=None):
+    """Safe integer input with validation."""
+    while True:
+        try:
+            value = int(input(prompt))
+            if min_val <= value <= max_val:
+                if future_check and not future_check(value):
+                    print(
+                        colored("Your date of birth cannot be in the future.", "yellow")
+                    )
+                else:
+                    return value
             else:
                 print(
-                    termcolor.colored(
-                        "Your date of birth cannot be in the future.", "yellow"
+                    colored(
+                        f"Please enter a number between {min_val} and {max_val}", "red"
                     )
                 )
-        else:
-            break
-    except:
-        print(termcolor.colored("Please enter a valid month", "red"))
+        except ValueError:
+            print(colored("Invalid input. Please enter a valid number.", "red"))
 
-# Determining days of the month available (considering leap year 29 February)
-if birthyear == today.year and birthmonth == today.month:
-    days = today.day
+
+# Year
+birth_year = input_int(
+    "Please enter the year you were born: ", 0, today.year, lambda y: y <= today.year
+)
+
+# Month
+print(MONTHS)
+birth_month = input_int(
+    "Please enter the month you were born (number): ",
+    1,
+    12,
+    lambda m: not (birth_year == today.year and m > today.month),
+)
+
+# Day
+if birth_year == today.year and birth_month == today.month:
+    max_day = today.day
 else:
-    if (
-        birthmonth == 1
-        or birthmonth == 3
-        or birthmonth == 5
-        or birthmonth == 7
-        or birthmonth == 8
-        or birthmonth == 10
-        or birthmonth == 12
-    ):
-        days = 31
-    elif birthmonth == 2:
-        if (birthyear % 4 == 0 and birthyear % 100 != 0) or birthyear % 400 == 0:
-            days = 29
-        else:
-            days = 28
-    else:
-        days = 30
+    max_day = (
+        datetime.date(birth_year, birth_month, 28) + datetime.timedelta(days=4)
+    ).replace(day=1) - datetime.timedelta(days=1)
+    max_day = max_day.day
 
-# Day selection
-while True:
-    try:
-        birthday = int(
-            input(f"Please enter the date you were born days between: 1-{days}: ")
-        )
-        if days >= birthday >= 1:
-            break
-        elif (
-            birthyear == today.year
-            and birthmonth == today.month
-            and birthday > today.day
-        ):
-            print(
-                termcolor.colored(
-                    "Your date of birth cannot be in the future.", "yellow"
-                )
-            )
-        else:
-            print(termcolor.colored("Please enter a valid day", "red"))
-    except:
-        print(termcolor.colored("Please enter a valid day", "red"))
+birth_day = input_int(
+    f"Please enter the day you were born (1-{max_day}): ",
+    1,
+    max_day,
+    lambda d: not (
+        birth_year == today.year and birth_month == today.month and d > today.day
+    ),
+)
 
-# Calculating leap years within the range of year of birth and year living in
-leap_counter = 0
-for i in range(birthyear, today.year):
-    if (i % 4 == 0 and i % 100 != 0) or i % 400 == 0:
-        leap_counter += 1
-if (today.year % 4 == 0 and today.year % 100 != 0) or today.year % 400 == 0:
-    if today.month > 2 or (today.month == 2 and today.day == 29):
-        leap_counter += 1
+birth_date = datetime.date(birth_year, birth_month, birth_day)
 
-# Calculating years lived
-if birthyear == today.year:
-    lived_years = 0
-elif birthyear == today.year - 1 and birthmonth >= today.month and birthday > today.day:
-    lived_years = 0
-else:
-    if birthmonth == today.month and birthday > today.day:
-        lived_years = (today.year - birthyear) - 1
-    elif birthmonth > today.month:
-        lived_years = today.year - birthyear - 1
-    else:
-        lived_years = today.year - birthyear
+# Calculate age
+age_delta = relativedelta(today, birth_date)
+age_in_days = (today - birth_date).days
 
-# Calculating months lived
-if birthmonth < today.month - 1 + 12 and birthday > today.day:
-    lived_months = today.month - birthmonth + 12 - 1
-elif birthmonth == today.month - 1 + 12 and birthday > today.day:
-    lived_months = today.month - 1
-else:
-    if today.month - birthmonth == 0:
-        lived_months = 0
-    else:
-        lived_months = today.month - birthmonth + 12
-
-# Calculating days lived
-if birthmonth == today.month - 1 + 12 and birthday > today.day:
-    lived_days = today.day - birthday + days
-else:
-    if today.day - birthday == 0:
-        lived_days = 0
-    elif today.month - birthmonth == 0 and birthday < today.day:
-        lived_days = today.day - birthday
-    else:
-        lived_days = today.day - birthday + days
-
-# Calculating age in days
-birthdate = f"{birthyear}-{birthmonth}-{birthday}"
-birthdate = datetime.datetime.strptime(birthdate, "%Y-%m-%d").date()
-age_in_days = (today - birthdate).days
-
-# Age output
 print(
-    termcolor.colored(
-        f"You have lived for: {lived_years} years, {lived_months} months and {lived_days} days",
+    colored(
+        f"You have lived for: {age_delta.years} years, {age_delta.months} months, and {age_delta.days} days",
         "green",
     )
 )
-print(termcolor.colored(f"You have lived for: {age_in_days} days", "green"))
+print(colored(f"You have lived for: {age_in_days} days", "green"))
 
-# Calculating age with considring extra days in leap years
-if leap_counter > 0:
-    while True:
-        consider_leap = input(
-            termcolor.colored(
-                "Do you want to consider leap years and extra 1 day(s) in your age? (Y yes, N no): ",
-                "cyan",
-            )
-        )
-        if consider_leap.casefold() == "y" or consider_leap.casefold() == "yes":
-            print(f"You lived {leap_counter} days in leap years")
-            if lived_days + leap_counter >= 31:
-                lived_months = lived_months + 1
-                lived_days_with_leap = lived_days + leap_counter - 31
-                print(
-                    termcolor.colored(
-                        f"You have lived for {lived_years} years, {lived_months} months and {lived_days_with_leap} days.",
-                        "green",
-                    )
-                )
-            else:
-                print(
-                    termcolor.colored(
-                        f"You have lived for {lived_years} years, {lived_months} months and {lived_days+leap_counter} days.",
-                        "green",
-                    )
-                )
-            print(
-                termcolor.colored(
-                    f"You have lived for: {age_in_days+leap_counter} days", "green"
-                )
-            )
-            break
-        elif consider_leap.casefold() == "n" or consider_leap.casefold() == "no":
-            exit()
-        else:
-            print(termcolor.colored("Your entered option is not valid!", "red"))
+# Leap year count
+leap_days = sum(
+    1
+    for year in range(birth_year, today.year + 1)
+    if (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
+)
+
+if leap_days > 0:
+    choice = (
+        input(colored("Consider leap years extra days? (Y/N): ", "cyan"))
+        .strip()
+        .lower()
+    )
+    if choice in ("y", "yes"):
+        print(colored(f"You lived {leap_days} days in leap years", "green"))
+        adjusted_days = age_in_days + leap_days
+        print(colored(f"With leap years: {adjusted_days} days", "green"))
 else:
     print(
-        termcolor.colored(
+        colored(
             "You did not live in a leap year (probably you are less than 4 years old xD)",
             "green",
         )
